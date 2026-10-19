@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis-leader
+  labels:
+    app: redis
+    role: leader
+    tier: backend
+    {{- include "guestbook.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis
+      role: leader
+      tier: backend
+  template:
+    metadata:
+      labels:
+        app: redis
+        role: leader
+        tier: backend
+        {{- include "guestbook.labels" . | nindent 8 }}
+    spec:
+      containers:
+        - name: leader
+          image: {{ include "guestbook.image" .Values.redis.leader.image | quote }}
+          imagePullPolicy: {{ .Values.redis.leader.image.pullPolicy }}
+          resources:
+            {{- toYaml .Values.redis.leader.resources | nindent 12 }}
+          ports:
+            - containerPort: 6379

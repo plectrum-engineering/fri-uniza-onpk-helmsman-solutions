@@ -1,0 +1,14 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: storefront-podinfo
+spec:
+  template:
+    spec:
+      containers:
+        - name: podinfo
+          env:
+            - name: PODINFO_UI_COLOR
+              value: "#6d4c41"
+            - name: PODINFO_UI_MESSAGE
+              value: "Bistro Byte - fresh bytes daily"

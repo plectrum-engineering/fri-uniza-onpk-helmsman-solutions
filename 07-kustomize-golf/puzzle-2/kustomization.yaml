@@ -1,0 +1,37 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ../base
+images:
+  - name: nginx
+    newName: nginx
+    newTag: 1.27-alpine
+configMapGenerator:
+  - name: web-config
+    files:
+      - app.properties
+secretGenerator:
+  - name: web-secret
+    literals:
+      - API_TOKEN=s3cr3t
+patches:
+  - target:
+      kind: Deployment
+      name: web
+    patch: |-
+      - op: add
+        path: /spec/template/spec/volumes
+        value:
+          - name: config
+            configMap:
+              name: web-config
+      - op: add
+        path: /spec/template/spec/containers/0/volumeMounts
+        value:
+          - name: config
+            mountPath: /etc/web
+      - op: add
+        path: /spec/template/spec/containers/0/envFrom
+        value:
+          - secretRef:
+              name: web-secret

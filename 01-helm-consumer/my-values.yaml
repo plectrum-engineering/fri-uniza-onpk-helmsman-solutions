@@ -1,0 +1,4 @@
+replicaCount: 2
+ui:
+  message: "Team Kraken was here"
+  color: "#7b2ff7"

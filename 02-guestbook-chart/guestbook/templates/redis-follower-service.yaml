@@ -1,0 +1,17 @@
+# NOTE: the name must stay "redis-follower" - the PHP frontend looks it up by this DNS name.
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-follower
+  labels:
+    app: redis
+    role: follower
+    tier: backend
+    {{- include "guestbook.labels" . | nindent 4 }}
+spec:
+  ports:
+    - port: 6379
+  selector:
+    app: redis
+    role: follower
+    tier: backend

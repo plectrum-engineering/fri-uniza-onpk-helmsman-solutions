@@ -1,0 +1,8 @@
+environment: dev
+frontend:
+  replicas: 1
+  service:
+    type: NodePort
+redis:
+  follower:
+    replicas: 1

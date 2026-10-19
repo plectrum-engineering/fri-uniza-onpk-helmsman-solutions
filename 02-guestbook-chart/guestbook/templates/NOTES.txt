@@ -1,0 +1,20 @@
+Guestbook "{{ .Release.Name }}" is deployed to namespace "{{ .Release.Namespace }}" ({{ .Values.environment }}).
+
+  frontend        {{ .Values.frontend.replicas }} replica(s), image {{ include "guestbook.image" .Values.frontend.image }}
+  redis-leader    1 replica
+  redis-follower  {{ .Values.redis.follower.replicas }} replica(s)
+
+{{- if .Values.ingress.enabled }}
+
+Open: http://{{ .Values.ingress.host }}
+{{- else if eq .Values.frontend.service.type "NodePort" }}
+
+Open:  minikube service frontend -n {{ .Release.Namespace }}
+{{- else }}
+
+Open:
+  kubectl -n {{ .Release.Namespace }} port-forward svc/frontend 8080:{{ .Values.frontend.service.port }}
+  then browse http://localhost:8080
+{{- end }}
+
+Smoke test:  helm test {{ .Release.Name }} -n {{ .Release.Namespace }}

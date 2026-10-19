@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis-follower
+  labels:
+    app: redis
+    role: follower
+    tier: backend
+    {{- include "guestbook.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.redis.follower.replicas }}
+  selector:
+    matchLabels:
+      app: redis
+      role: follower
+      tier: backend
+  template:
+    metadata:
+      labels:
+        app: redis
+        role: follower
+        tier: backend
+        {{- include "guestbook.labels" . | nindent 8 }}
+    spec:
+      containers:
+        - name: follower
+          image: {{ include "guestbook.image" .Values.redis.follower.image | quote }}
+          imagePullPolicy: {{ .Values.redis.follower.image.pullPolicy }}
+          resources:
+            {{- toYaml .Values.redis.follower.resources | nindent 12 }}
+          ports:
+            - containerPort: 6379

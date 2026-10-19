@@ -1,0 +1,23 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: podinfo-dev
+namePrefix: dev-
+
+resources:
+  - ../../base
+  - namespace.yaml
+
+labels:
+  - pairs:
+      env: dev
+
+configMapGenerator:
+  - name: podinfo-ui
+    behavior: merge
+    literals:
+      - PODINFO_UI_MESSAGE=Hello from DEV
+      - PODINFO_UI_COLOR=#2e7d32
+
+components:
+  - ../../components/chaos-monkey

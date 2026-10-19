@@ -1,0 +1,44 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ../base
+namePrefix: golf-
+labels:
+  - pairs:
+      tier: web
+    includeSelectors: true
+replicas:
+  - name: web
+    count: 4
+patches:
+  # remove the debug port (2nd item)
+  - target:
+      kind: Deployment
+      name: web
+    patch: |-
+      - op: remove
+        path: /spec/template/spec/containers/0/ports/1
+  # add a log-shipper sidecar
+  - patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: web
+      spec:
+        template:
+          spec:
+            containers:
+              - name: log-shipper
+                image: busybox:1.37
+                args: ["sh", "-c", "tail -F /dev/null"]
+replacements:
+  - source:
+      kind: Service
+      name: backend
+      fieldPath: metadata.name
+    targets:
+      - select:
+          kind: Deployment
+          name: web
+        fieldPaths:
+          - spec.template.spec.containers.[name=nginx].env.[name=BACKEND_HOST].value
